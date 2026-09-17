@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags: ['v*']
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  install-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm pack --pack-destination "$RUNNER_TEMP"
+      - name: Install the packed package with a fresh resolution and import it
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir consumer && cd consumer
+          npm init -y > /dev/null
+          npm install ../markdown-editor-*.tgz
+          node --input-type=module -e "import * as m from 'markdown-editor'; for (const n of ['createMarkdownEditor','insertNewlineTightList','minimalReplacement','multiCursorKeymap']) if (!m[n]) { console.error('missing export', n); process.exit(1) }"
