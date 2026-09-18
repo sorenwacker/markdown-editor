@@ -121,6 +121,14 @@ describe('createMarkdownEditor', () => {
     }
   })
 
+  // The selection layer sits at a negative z-index, so the editor must form a
+  // stacking context; otherwise the layer paints behind the editor background
+  // and no selection color can make it visible.
+  it('keeps the selection layer in front of the editor background', () => {
+    mounted()
+    expect(themeCss()).toMatch(/isolation:\s*isolate/)
+  })
+
   it('themes the find and replace panel', () => {
     mounted()
     const css = themeCss()

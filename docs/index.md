@@ -71,7 +71,7 @@ The editor's colors are CSS custom properties with fallbacks, so each applicatio
 | `--md-editor-panel-bg`, `--md-editor-panel-fg` | Find and replace panel |
 | `--md-editor-border` | Panel edge, inputs, and buttons |
 
-Every highlight is a translucent background over the editor background, so the text keeps its own color and stays readable. CodeMirror's own defaults are opaque and were unreadable on a dark background, so the theme covers all of them rather than only the selection.
+Every highlight is a translucent background over the editor background, so the text keeps its own color and stays readable. `--md-editor-active-line` must be translucent too: the active line is painted over the selection layer, so an opaque color there hides the selection on the line being edited. CodeMirror's own defaults are opaque and were unreadable on a dark background, so the theme covers all of them rather than only the selection.
 
 ### `insertNewlineTightList(view)`
 

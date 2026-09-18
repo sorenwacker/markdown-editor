@@ -21,6 +21,10 @@ const theme = EditorView.theme({
     height: '100%',
     backgroundColor: 'var(--md-editor-bg, transparent)',
     color: 'var(--md-editor-fg, inherit)',
+    // CodeMirror draws the selection in a layer at a negative z-index. Without
+    // a stacking context here, that layer paints behind this background and the
+    // selection is invisible however it is coloured.
+    isolation: 'isolate',
   },
   '.cm-scroller': {
     overflow: 'auto',
