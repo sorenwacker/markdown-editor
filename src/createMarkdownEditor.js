@@ -36,8 +36,46 @@ const theme = EditorView.theme({
   '&.cm-focused': {
     outline: 'none',
   },
+  // Highlights are translucent so the text keeps its own color over them.
+  // CodeMirror's defaults are opaque and light, which hides text on a dark
+  // background, so every layer is overridden rather than only the selection.
   '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-    backgroundColor: 'var(--md-editor-selection, rgba(59, 130, 246, 0.3)) !important',
+    backgroundColor: 'var(--md-editor-selection, rgba(59, 130, 246, 0.45)) !important',
+  },
+  '.cm-selectionMatch': {
+    backgroundColor: 'var(--md-editor-selection-match, rgba(255, 190, 60, 0.28))',
+  },
+  '.cm-searchMatch': {
+    backgroundColor: 'var(--md-editor-search-match, rgba(255, 190, 60, 0.32))',
+  },
+  '.cm-searchMatch.cm-searchMatch-selected, .cm-searchMatch-selected': {
+    backgroundColor: 'var(--md-editor-search-match-selected, rgba(255, 140, 0, 0.65))',
+  },
+  '.cm-panels': {
+    backgroundColor: 'var(--md-editor-panel-bg, var(--md-editor-bg, #ffffff))',
+    color: 'var(--md-editor-panel-fg, var(--md-editor-fg, inherit))',
+    border: 'none',
+  },
+  '.cm-panels.cm-panels-bottom': {
+    borderTop: '1px solid var(--md-editor-border, rgba(127, 127, 127, 0.4))',
+  },
+  '.cm-panels.cm-panels-top': {
+    borderBottom: '1px solid var(--md-editor-border, rgba(127, 127, 127, 0.4))',
+  },
+  '.cm-panel input, .cm-panel button, .cm-panel select': {
+    backgroundColor: 'transparent',
+    color: 'inherit',
+    border: '1px solid var(--md-editor-border, rgba(127, 127, 127, 0.4))',
+    borderRadius: '4px',
+    padding: '2px 6px',
+    fontFamily: 'inherit',
+  },
+  '.cm-panel button:hover': {
+    backgroundColor: 'var(--md-editor-active-line, rgba(127, 127, 127, 0.1))',
+  },
+  '.cm-panel input[type=checkbox]': {
+    border: 'none',
+    padding: '0',
   },
   '.cm-cursor': {
     borderLeftColor: 'var(--md-editor-caret, #3b82f6)',

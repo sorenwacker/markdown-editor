@@ -83,16 +83,49 @@ describe('createMarkdownEditor', () => {
     expect(editor.view.state.facet(EditorView.darkTheme)).toBe(true)
   })
 
+  const themeCss = () =>
+    [...document.querySelectorAll('style')].map(s => s.textContent).join('\n')
+    + [...(document.adoptedStyleSheets || [])].flatMap(s => [...s.cssRules].map(r => r.cssText)).join('\n')
+
   it('takes its colors from the documented CSS custom properties', () => {
     mounted()
-    const css = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n')
-      + [...(document.adoptedStyleSheets || [])].flatMap(s => [...s.cssRules].map(r => r.cssText)).join('\n')
+    const css = themeCss()
     for (const property of [
       '--md-editor-bg', '--md-editor-fg', '--md-editor-gutter-bg', '--md-editor-gutter-fg',
       '--md-editor-active-line', '--md-editor-caret', '--md-editor-selection',
+      '--md-editor-selection-match', '--md-editor-search-match', '--md-editor-search-match-selected',
+      '--md-editor-panel-bg', '--md-editor-panel-fg', '--md-editor-border',
     ]) {
       expect(css).toContain(property)
     }
+  })
+
+  // CodeMirror's own highlight colors are opaque and light (bright green for a
+  // selection match, magenta for a search match), which hides the text on a
+  // dark background. Every highlight the theme sets must be translucent, so the
+  // editor's own text color stays readable over it.
+  it('styles every highlight layer, with translucent fallback colors', () => {
+    mounted()
+    const css = themeCss()
+    for (const selector of ['.cm-selectionBackground', '.cm-selectionMatch', '.cm-searchMatch', '.cm-searchMatch-selected']) {
+      expect(css).toContain(selector)
+    }
+    for (const property of [
+      '--md-editor-selection', '--md-editor-selection-match',
+      '--md-editor-search-match', '--md-editor-search-match-selected',
+    ]) {
+      // The fallback is the text after the property name in var(--x, fallback).
+      const fallback = css.slice(css.indexOf(property) + property.length).match(/,\s*([^)]*\))/)?.[1]
+      expect(fallback, `${property} needs a fallback color`).toBeTruthy()
+      expect(fallback, `${property} fallback must be translucent: ${fallback}`).toMatch(/rgba\(/)
+    }
+  })
+
+  it('themes the find and replace panel', () => {
+    mounted()
+    const css = themeCss()
+    expect(css).toMatch(/\.cm-panel/)
+    expect(css).toContain('--md-editor-panel-bg')
   })
 
   it('removes itself from the parent on destroy', () => {
